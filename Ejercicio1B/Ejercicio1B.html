@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="initial-scale=1,maximum-scale=1,user-scalable=no">
+  <title>Oficinas Esri España</title>
+  <style>
+    html,
+    body,
+    #viewDiv {
+      padding: 0;
+      margin: 0;
+      height: 100%;
+      width: 100%;
+    }
+  </style>
+
+  <link rel="stylesheet" href="https://js.arcgis.com/4.34/esri/themes/light/main.css" />
+  <script src="https://js.arcgis.com/4.34/"></script>
+
+  <script>
+    // Carga de módulos necesarios para la aplicación: Map y MapView
+    require([
+      "esri/Map",
+      "esri/views/MapView"
+    ], function(Map, MapView) {
+
+      // Construimos el objeto mapa
+      
+      var map = new Map({
+        // Definir el mapa base del mapa
+        basemap: "satellite"
+      });
+
+      //Construir el objeto vista.
+      var view = new MapView({
+        // Elemento HTML donde irá el mapa.
+        container: "viewDiv",
+        // Asignación del mapa en la vista
+        map: map,
+        // Nivel de zoom
+        zoom: 15,
+        // Coordenadas del centro de la vista
+        center: [-9.271, 42.887]
+        
+      });
+
+    });
+  </script>
+</head>
+
+<body>
+  <div id="viewDiv"></div>
+</body>
+</html>

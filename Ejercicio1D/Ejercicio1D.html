@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="initial-scale=1,maximum-scale=1,user-scalable=no">
+  <title>Escenas 3D</title>
+  <style>
+    html,
+    body,
+    #viewDiv {
+      padding: 0;
+      margin: 0;
+      height: 100%;
+      width: 100%;
+    }
+
+    #environmentDiv {
+      position: absolute;
+      top: 12px;
+      right: 12px;
+      padding: 12px;
+      background-color: rgba(0, 0, 0, 0.5);
+      color: white;
+    }
+  </style>
+
+  <link rel="stylesheet" href="https://js.arcgis.com/4.34/esri/themes/light/main.css" />
+  <script src="https://js.arcgis.com/4.34/"></script>
+
+  <script>
+    require([
+      "esri/Map",
+      "esri/views/SceneView",
+    "esri/layers/SceneLayer"],
+    function(Map, SceneView, SceneLayer) {
+
+      // Creamos el mapa
+
+      var map = new Map({
+        basemap: "streets",
+        ground: "world-elevation"
+      });
+
+      // Creamos la vista 3D (SceneView)
+      var view = new SceneView({
+        //Elementos del HTML donde se mostrará la Escena 3D
+        container: "viewDiv",
+        // Mapa que se utilizará en la escena como base
+        map: map,
+        // propiedades de la cámara inical de la escena 3D
+        camera: {
+          position: {
+            x: -74.033,
+            y: 40.691,
+            z: 250
+          },
+          tilt: 75
+        }
+      });
+     
+      // Ajusta las propiedades de entorno para la escena 3D
+      view.environment = {
+        lighting: {
+          directShadowsEnabled: true,
+          date: new Date("Sun Mar 15, 2023 18:00:00 GMT+0100 (CET)"),
+          
+        }
+      };
+
+      // Crea una SceneLayer y añadela a la escena
+      //https://www.arcgis.com/home/item.html?id=327d6b60509f4ddab12ee5a424fac7de
+      let sceneLayer = new SceneLayer({
+        portalItem: {
+          id: "327d6b60509f4ddab12ee5a424fac7de"
+        }
+      });
+
+       map.add(sceneLayer);    
+       
+      // Eventos que registran el cambio de opción en el menú de controles
+
+      document.getElementById("timeOfDaySelect").addEventListener("change", updateTimeOfDay);
+      document.getElementById("directShadowsInput").addEventListener("change", updateDirectShadows);
+
+      // Funciones que realizan el cambio una vez el evento haya detectado el cambio de opción en el selector
+
+      // Función para actualizar la hora y el día.
+
+      function updateTimeOfDay(ev) {
+        var select = ev.target;
+        var date = select.options[select.selectedIndex].value;
+        
+        view.environment.lighting.date = new Date(date);
+        
+      }
+
+      // Función para activar o desactivar las sombras.
+
+      function updateDirectShadows(ev) {
+        view.environment.lighting.directShadowsEnabled = !!ev.target.checked;
+      }
+    });
+  </script>
+</head>
+
+<body>
+  <div id="viewDiv"></div>
+  <div id="environmentDiv">
+    <table>
+      <tr>
+        <td>Time of day:</td>
+        <td>
+          <select id="timeOfDaySelect">
+            <option value="Sun Mar 15 2015 09:00:00 GMT+0200 (CET)">Morning</option>
+            <option value="Sun Mar 15 2015 12:00:00 GMT+0200 (CET)">Noon</option>
+            <option value="Sun Mar 15 2015 16:00:00 GMT+0200 (CET)">Afternoon</option>
+            <option value="Sun Mar 15 2015 18:00:00 GMT+0200 (CET)">Evening</option>
+          </select>
+        </td>
+      </tr>
+      <tr>
+        <td>Direct shadows:</td>
+        <td><input id="directShadowsInput" type="checkbox" checked="yes"></td>
+      </tr>
+    </table>
+  </div>
+</body>
+</html>

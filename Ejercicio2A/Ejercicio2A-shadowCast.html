@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ShadowCast Plaza de Lima</title>
+
+  <link rel="stylesheet" href="https://js.arcgis.com/4.34/esri/themes/light/main.css" />
+  <script src="https://js.arcgis.com/4.34/"></script>
+
+    <style>
+        html,
+        body,
+        #viewDiv {
+          padding: 0;
+          margin: 0;
+          height: 100%;
+          width: 100%;
+        }
+    </style>
+
+    <script>
+
+        require([
+            "esri/WebScene",
+            "esri/Map",
+            "esri/views/SceneView",
+            "esri/widgets/ShadowCast"       
+        ],(WebScene, Map, SceneView, ShadowCast) => {
+
+            // Creamos el mapa y la vista
+            let view  = new SceneView({
+                container: "viewDiv",
+
+                map: new WebScene({
+                    portalItem: {
+                        id: "3acf05d51db2456b9a808edfcc081059"
+                    }
+                }),
+            });
+
+            // Creamos el widget
+           const widget = new ShadowCast({
+                 view: view
+            });
+
+        // Añadir el widget a la parte superior derecha de la pantalla
+            view.ui.add(widget, "top-right");
+
+            // Establecer el día en el que está configurada la vista
+
+            widget.viewModel.date = new Date("May 1, 2023");
+        })
+    </script>
+
+</head>
+<body>
+    <div id="viewDiv"></div>
+    
+</body>
+</html>

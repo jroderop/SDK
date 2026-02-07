@@ -1,0 +1,60 @@
+<html>
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="initial-scale=1,maximum-scale=1,user-scalable=no" />
+    <title>Editor Widget</title>
+
+     <link rel="stylesheet" href="https://js.arcgis.com/4.34/esri/themes/light/main.css" />
+     <script src="https://js.arcgis.com/4.34/"></script>
+
+    <style>
+        html,
+        body,
+        #viewDiv {
+            padding: 0;
+            margin: 0;
+            height: 100%;
+            width: 100%;
+        }
+    </style>
+    <script>
+
+        // Carga los módulos necesarios
+
+        require([
+            "esri/WebMap",
+            "esri/views/MapView",
+            "esri/widgets/Editor"   
+        ], function(WebMap, MapView, Editor) {
+
+            // Creamos el mapa
+            let webMap = new WebMap({
+                portalItem: {
+                    id: "459a495fc16d4d4caa35e92e895694c8"
+                }
+            });
+
+            // Creamos la vista
+            let view = new MapView({
+                container: "viewDiv",
+                map: webMap
+            });
+
+            // Creamos el widget de Editor
+            let editor = new Editor({
+                view: view
+            });
+
+            // Añadimos el widget a la vista.
+            view.ui.add(editor, "bottom-left");
+            
+        });
+    </script>
+</head>
+
+<body>
+    <div id="viewDiv"></div>
+</body>
+
+</html>

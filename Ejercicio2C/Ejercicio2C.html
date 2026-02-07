@@ -1,0 +1,104 @@
+<html>
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="initial-scale=1,maximum-scale=1,user-scalable=no" />
+    <title>Sketch widget</title>
+
+     <link rel="stylesheet" href="https://js.arcgis.com/4.34/esri/themes/light/main.css" />
+     <script src="https://js.arcgis.com/4.34/"></script>
+
+    <style>
+        html,
+        body,
+        #viewDiv {
+            padding: 0;
+            margin: 0;
+            height: 100%;
+            width: 100%;
+        }
+    </style>
+    <script>
+
+        // Carga los módulos necesarios
+
+        require([
+            "esri/widgets/Sketch",
+            "esri/Map",
+            "esri/layers/GraphicsLayer",
+            "esri/views/MapView",
+            "esri/widgets/Sketch/SketchViewModel"
+        ], (Sketch, Map, GraphicsLayer, MapView, SketchViewModel) => {
+
+            // Creamos la capa gráfica (instanciar)
+            const graphicsLayer = new GraphicsLayer(); // capa donde se dibujaran los elementos gráficos.
+            
+                  
+            // Creamos el mapa
+
+            const map = new Map({
+                basemap: "topo-vector",
+                layers: [graphicsLayer]
+            });
+
+            // Creamos la vista antes de usar "view" en Sketch
+
+            const view = new MapView({
+                container: "viewDiv",
+                map: map,
+                zoom: 5,
+                center: [90, 45]
+            });
+
+            // Creamos el widget de Sketch
+            const sketch = new Sketch({
+                view: view,
+                layer: graphicsLayer,
+                viewModel: new SketchViewModel({
+
+               // Simbología que se utilizará si es un poligono
+                polygonSymbol: {
+                    type: "simple-fill",
+                    style: "cross", 
+                    color: "#EFC8B1",
+                    outline: {
+                        width: 3,
+                        style: "solid",
+                        color: "#514644",
+                        }
+                },
+
+                // Simbología que se utilizará si es un punto
+                pointSymbol: {
+                    type: "simple-marker",
+                    style: "diamond",
+                    size: 6,
+                    color: [255, 255, 255],
+                    outline: {
+                        width: 1,
+                        color: [50,50,50]
+                    }
+                },
+
+                // Simbología que se utilizará si es una polilinea
+                polylineSymbol: {
+                    type: "simple-line",
+                    color: [255, 130, 130],
+                    width: 5
+                },
+               view: view,
+               layer: graphicsLayer
+                })
+            });
+            
+            // añadimos el widget a la vista
+            view.ui.add(sketch, "top-right");
+        });
+    </script>
+</head>
+
+<body>
+    <div id="viewDiv"></div>
+</body>
+
+</html>

@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Capa Gráfica del Mapa</title>
+
+     <link rel="stylesheet" href="https://js.arcgis.com/4.34/esri/themes/light/main.css" />
+     <script src="https://js.arcgis.com/4.34/"></script>
+
+    <style>
+        html,
+        body,
+        #viewDiv {
+          padding: 0;
+          margin: 0;
+          height: 100%;
+          width: 100%;
+        }
+    </style>
+
+    <script>
+
+        // Cargamos los módulos necesarios
+
+        require([
+        "esri/Map",
+        "esri/views/MapView",
+        "esri/Graphic",
+        "esri/layers/GraphicsLayer"
+        ],(Map, MapView, Graphic, GraphicsLayer) => {
+
+            // Construimos el punto
+            const point = {
+                type: "point",
+                longitude: -118.80657463861,
+                latitude: 34.0005930608889
+            };
+            
+            // Simbología del punto
+            const simpleMarkerSymbol = {
+                type: "simple-marker",
+                color: [226, 119, 40],
+                outline: {
+                    color: [255, 255, 255],
+                    width: 1,
+            }
+            };
+
+            // Construimos la polilínea
+            const polyline = {
+                type: "polyline",
+                paths: [
+                    [-118.821527826096, 34.0139576938577],
+                    [-118.814893761649, 34.0080602407843],
+                    [-118.808878330345, 34.0016642996246],
+                    
+                ]
+            };
+
+            // Simbología de la polilínea
+            const simpleLineSymbol = {
+                type: "simple-line",
+                color: [226, 119, 40],
+                width: 2
+            };
+
+            // Construimos el polígono
+            const polygon = {
+                type: "polygon",
+                rings: [
+                    [-118.818984489994, 34.0137559967283],
+                    [-118.806796597377, 34.0215816298725],
+                    [-118.791432890735, 34.0163883241613],
+                    [-118.79596686535, 34.008564864635],
+                    [-118.808558110679, 34.0035027131376]
+                ]
+            };
+
+            // Simbología del polígono
+            const simpleFillSymbol = {
+                type: "simple-fill",
+                color: [227, 139, 79, 0.8],
+                outline: {
+                    color: [255, 255, 255],
+                    width: 1
+                }
+            };
+
+            // Construimos los gráficos del punto, polilínea y polígono
+            const pointGraphic = new Graphic({
+                geometry: point,
+                symbol: simpleMarkerSymbol
+            });
+
+            const polylineGraphic = new Graphic({
+                geometry: polyline,
+                symbol: simpleLineSymbol
+            });
+
+            const polygonGraphic = new Graphic({
+                geometry: polygon,
+                symbol: simpleFillSymbol
+            });
+
+            // Construimos el mapa
+            const map = new Map({
+                basemap: "streets"
+            });
+
+
+            // Creamos la vista
+            const view = new MapView({
+                container: "viewDiv",
+                map: map,
+                center: [-118.800, 34.000],
+                zoom: 15
+            });
+
+
+            // Construimos la capa gráfica
+            const graphicsLayer = new GraphicsLayer({
+                graphics: [pointGraphic, polylineGraphic, polygonGraphic]
+            });
+
+             // Añadimos la capa gráfica al mapa
+            map.add(graphicsLayer);
+                graphicsLayer.add(pointGraphic);
+                graphicsLayer.add(polylineGraphic);
+                graphicsLayer.add(polygonGraphic);
+                
+            
+        })
+    </script>
+
+</head>
+<body>
+    <div id="viewDiv"></div>
+    
+</body>
+</html>

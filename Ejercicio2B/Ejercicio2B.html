@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="initial-scale=1,maximum-scale=1,user-scalable=no">
+    <title>Search Widget</title>
+
+    <style>
+        html,
+        body,
+        #viewDiv {
+            padding: 0;
+            margin: 0;
+            height: 100%;
+            width: 100%;
+        }
+    </style>
+
+  <link rel="stylesheet" href="https://js.arcgis.com/4.34/esri/themes/light/main.css" />
+  <script src="https://js.arcgis.com/4.34/"></script>
+
+    <script>
+
+        // Cargamos los módulos necesarios.
+
+        require([
+             "esri/Map",
+             "esri/views/MapView",
+             "esri/layers/FeatureLayer",
+             "esri/widgets/Search",
+
+            ],function(Map, MapView, FeatureLayer, Search){
+
+            // Creamos un mapa
+
+            var map = new Map({
+                basemap: "gray-vector"
+            });
+
+            // Creamos una vista
+
+            var view = new MapView({
+                container: "viewDiv",
+                map: map,
+                center: [-3, 40.7608], // lon, lat
+                scale: 10000000
+            });
+
+            // Creamos una Feature Layer que utilizaremos como fuente para buscar los hospitales.
+
+            const hospitalesFeatureLayer = new FeatureLayer({
+                url: "https://services1.arcgis.com/nCKYwcSONQTkPA4K/arcgis/rest/services/Hospitales/FeatureServer/0",
+                popupTemplate: {
+                    title: "{NOMBRE}",
+                    content: "{PROVINCIAS}"
+                }
+            });
+
+            // Crear el widget de búsqueda
+
+            const searchWidget = new Search({
+                view: view,
+                suggestionsEnabled: true,
+                maxSuggestions: 4,
+
+                           
+           // Ajustar las propiedades de fuente del dato localizador
+
+                sources: [{
+                    layer: hospitalesFeatureLayer,
+                    searchFields: ["NOMBRE", "PROVINCIAS"],
+                    suggestionTemplate: "{NOMBRE} - {PROVINCIAS}",
+                    exactMatch: false,
+                    outFields: ["*"],
+                    placeholder: "Ejemplo: Hospital de Madrid",
+                    name: "Hospitales",
+                    resultSymbol: {
+                        type: "simple-marker",
+                        color: [119, 158, 203, 0.9],
+                        style: "circle",
+                        outline:{
+                            color: "white",
+                            width: 1
+                        }
+                    }, 
+                }
+            ],
+
+            });
+
+            // Añadir el widget a la vista
+            
+            view.ui.add(searchWidget, {
+                position: "top-right",
+            });
+
+        });
+    </script>
+</head>
+
+<body>
+    <div id="viewDiv"></div>
+</body>
+
+</html>

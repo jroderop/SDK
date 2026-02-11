@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta
+      name="viewport"
+      content="initial-scale=1,maximum-scale=1,user-scalable=no"
+    />
+    <title>Query</title>
+    <style>
+      html,
+      body,
+      #viewDiv {
+        padding: 0;
+        margin: 0;
+        height: 100%;
+        width: 100%;
+      }
+    </style>
+
+     <link rel="stylesheet" href="https://js.arcgis.com/4.34/esri/themes/light/main.css" />
+     <script src="https://js.arcgis.com/4.34/"></script>
+
+    <script>
+      require([
+        'esri/Map',
+        'esri/views/MapView',
+        'esri/layers/FeatureLayer',
+        'esri/rest/support/Query',
+        'esri/layers/GraphicsLayer'
+      ], function (Map, MapView, FeatureLayer, Query, GraphicsLayer) {
+
+        // cargamos la feature Layer a la que haremos la consulta, que en este caso dejaremos oculta
+          let featureLayer = new FeatureLayer({
+            url: 'https://services.arcgis.com/V6ZHFr6zdgNZuVG0/ArcGIS/rest/services/national_park_service/FeatureServer/0'
+          });
+          
+                
+        // Se crea la capa de resultados con el GraphiLayer
+
+        var resultsLayer = new GraphicsLayer()
+
+        // Se crea el mapa añadiendo la capa de resultados directamente
+
+        var map = new Map({
+          basemap: 'streets',
+          layers: [resultsLayer]
+        })
+
+        // Se crea la vista del mapa
+
+        var view = new MapView({
+          container: 'viewDiv',
+          map: map,
+          zoom: 5,
+          center: [-112.9007, 45.0379]
+        })
+
+        // añadimos el mapa a la vista
+
+         view.when(function () {
+           map.add(featureLayer);
+         });
+
+        // Se crea la query de tipo where
+
+        var query = new Query({
+          where: "Location_Name = 'Fort Vancouver National Historic Site'",
+          // se pide que devuelva la geometría para posteriormente poder pintarlo en la capa gráfica
+          
+          returnGeometry: true,
+
+          // estos son los campos de atributos que queremos que nos devolverá la consulta (query)
+
+          outFields: ["City", "State", "Zip_Code", "Phone_Number"],
+
+        });
+        
+        // En este paso ejecutamos la query en la capa. Y esperamos la respuesta con .then y .catch que gestiona los errores
+        featureLayer
+          .queryFeatures(query)
+          .then(function (results) {
+            console.log(results);
+            displayResults(results);
+            })
+            .catch(function (error) {
+              console.log(error);
+            });
+
+        // Se genera la simbología para cada uno de los resultados
+        function displayResults(results) {
+          let features = results.features.map(function (graphic) {
+            graphic.symbol = {
+              type: 'simple-marker', // el tipo de símbolo que queremos usar.
+              style: 'diamond', //el estilo del símbolo, en este caso un rombo.
+              size: 26.5, // el tamaño del símbolo
+              color: 'red', // el color del símbolo.              
+            };
+            return graphic;
+          });
+            resultsLayer.addMany(features);
+
+            console.log(results.features[0].attributes);
+        }
+        
+      });
+          
+    </script>
+  </head>
+
+  <body>
+    <div id="viewDiv"></div>
+  </body>
+</html>

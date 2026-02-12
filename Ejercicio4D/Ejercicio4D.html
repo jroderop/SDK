@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FlowRenderer</title>
+
+     <link
+    rel="stylesheet" href="https://js.arcgis.com/4.34/esri/themes/light/main.css" />
+     <script src="https://js.arcgis.com/4.34/"></script>
+
+    <style>
+        html,
+        body,
+        #viewDiv {
+          padding: 0;
+          margin: 0;
+          height: 100%;
+          width: 100%;
+        }
+    </style>
+
+    <script>
+
+        require([
+        "esri/Map",
+        "esri/views/MapView",
+        "esri/layers/ImageryTileLayer"
+
+        ],(Map,MapView,ImageryTileLayer) => {
+
+        
+          // Se crea el mapa con el basemap oscuro
+          let map = new Map({
+            basemap:"dark-gray-vector"
+          })
+
+         // Se crea la vista del mapa
+           let mapView = new MapView({
+            map: map,
+            container: 'viewDiv',
+            zoom:4,
+            center:[-100,40.94]
+          })
+
+         // crear la capa de viento con el renderer de flujo
+          let viento = new ImageryTileLayer({
+            url: "https://tiledimageservices.arcgis.com/V6ZHFr6zdgNZuVG0/arcgis/rest/services/NLDAS_Hourly_8_30_2021/ImageServer",
+           
+            renderer:{
+              type: "flow",
+              density: 1,
+              flowspeed: 20,
+              maxPathLength: 100,
+              trailWidth: "2px",
+
+              visualVariables: [
+                {
+                  type: "color",
+                  field: "Magnitude",
+                  stops: [
+                    {color: [40, 146, 199, 1], value: 0},
+                  {color: [160, 194, 155, 1], value: 5},
+                  {color:[255, 64, 0, 1], value: 10}
+                  ]
+                }
+              ]
+              },
+
+          // Agregamos un efecto de resplandor para mejorar la visualización
+            effect:"bloom(2, 0.5px, 0.0)"
+          })
+
+          // Agregamos el mapa viento
+          map.add(viento)
+
+        });
+
+    </script>
+
+</head>
+<body>
+    <div id="viewDiv"></div>
+    
+</body>
+</html>

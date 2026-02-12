@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Trabajando con Imágenes</title>
+
+  <style>
+    html,
+    body,
+    #viewDiv {
+      padding: 0;
+      margin: 0;
+      height: 100%;
+      width: 100%;
+    } 
+
+    button{
+      position: absolute;
+      top:30px;
+      padding: 5px;
+      background-color: rgb(31, 31, 31);
+      color: rgb(219, 219, 219);
+      border-radius: 8px;
+      right: 30px;
+      font-family: monospace;
+    }
+
+    #geologia{
+      right:150px
+    }
+  </style>
+  
+  
+     <link
+    rel="stylesheet" href="https://js.arcgis.com/4.34/esri/themes/light/main.css" />
+     <script src="https://js.arcgis.com/4.34/"></script>
+  
+  
+  <script defer>
+    require([
+      "esri/Map",
+      "esri/views/MapView",
+      "esri/layers/ImageryTileLayer",
+      "esri/layers/support/RasterFunction",
+      "esri/layers/support/rasterFunctionConstants"
+    ]
+      ,function(Map, MapView, ImageryTileLayer,RasterFunction, rasterFunctionConstants) {   
+        
+        // Se crea el mapa con el basemap topografía   
+        let map = new Map({ 
+          basemap: "topo-vector"
+          }) 
+
+        // Se crea la vista del mapa
+        let view = new MapView({ 
+          container: "viewDiv",
+          map: map,
+          zoom: 13, 
+          center: [-16.44, 28.38]
+        });
+
+// Definimos la función ráster que vamos a usar.
+let functionRaster = new RasterFunction({ 
+    functionName: "NDVI",
+    functionArguments: {
+        visibleBandID: 3,   
+        infraredBandID: 7   
+    } 
+});
+
+// Función Colormap para aplicar una paleta de colores a la función ráster anterior.
+let colormap = new RasterFunction({ 
+    functionName: "Colormap",
+    functionArguments: { 
+        colormapName: rasterFunctionConstants.colormapName.NDVI2,
+        raster: functionRaster
+    }
+});
+
+// Cargamos la capa con las imágenes de satélite.
+let imagen = new ImageryTileLayer({ 
+    url: "https://tiledimageservices1.arcgis.com/MPSkeshhtFz9vjCL/arcgis/rest/services/Imagen_Incendio_Canarias___Sentinel_2/ImageServer",
+    rasterFunction: colormap,
+    effect: "saturate(150%)" 
+});
+        
+// Se añade la capa al mapa
+ map.add(imagen)
+        
+})
+
+  </script>
+
+</head>
+<body>
+  <div id="viewDiv"></div>
+</body>
+</html>

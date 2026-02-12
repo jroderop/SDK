@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ejercicio 4E: Popups y Renderer</title>
+
+    <link rel="stylesheet" href="https://js.arcgis.com/4.27/esri/themes/light/main.css">
+    <script src="https://js.arcgis.com/4.27/"></script>
+
+    <style>
+        html,
+        body,
+        #viewDiv {
+            padding: 0;
+            margin: 0;
+            height: 100%;
+            width: 100%;
+        }
+    </style>
+
+    <script>
+        require([
+            "esri/Map",
+            "esri/views/MapView",
+            "esri/layers/FeatureLayer",
+            "esri/core/reactiveUtils"
+        ], (Map, MapView, FeatureLayer, reactiveUtils) => {
+
+            let mapa = new Map({
+                basemap: "dark-gray-vector"
+            });
+
+            // Configuración de la acción del popup de rotar
+            const viewRotateAction = {
+                title: "Rotar",
+                id: "rotate",
+                className: "esri-icon-rotate"
+            };
+
+            // Creamos la plantilla del popup 
+            let plantillaPopup = {
+                title: 'Zona de reserva de {SONAME}', // Título del atributo
+                content: [
+                    {
+                        type: "fields",
+                        fieldInfos: [
+                            {
+                                fieldName: "localId",
+                                label: "ID local"
+                            },
+                            {
+                                fieldName: "TIPO_NUEVO",
+                                label: "Tipo de reserva"
+                            },
+                            {
+                                fieldName: "Shape__Area",
+                                label: "Superficie",
+                                format: {
+                                    digitSeparator: true, // Separador de miles
+                                    places: 0             // Sin decimales
+                                }
+                            }
+                        ]
+                    }
+                ],
+                actions: [viewRotateAction] // Añadimos la acción creada arriba
+            };
+
+            // Definimos el Renderizador de Valores Únicos
+            //let renderer = {
+              //  type: "unique-value",
+              //  field: "TIPO", // Campo por el que clasificamos
+              //  defaultSymbol: { type: "simple-fill" },
+              //  uniqueValueInfos: [
+               //     {
+               //         value: "ZEPA", // Zonas de Especial Protección para las Aves
+               //         symbol: {
+               //             type: "simple-fill",
+               //             color: [167, 255, 0, 1], // Verde lima opaco
+               //             style: "diagonal-cross", // Trama diagonal
+               //             outline: { width: 1, color: "white" }
+               //         }
+               //     },
+               //     {
+               //         value: "LIC", // Lugares de Importancia Comunitaria
+               //         symbol: {
+               //             type: "simple-fill",
+               //             color: [255, 102, 0, 0.7], // Naranja con transparencia
+               //             style: "solid",
+               //             outline: { width: 0 }
+               //         }
+               //     }
+               // ]
+            //};
+
+            // Cargamos la capa aplicando el renderizador y el popup
+            let capa = new FeatureLayer({
+                url: 'https://services1.arcgis.com/nCKYwcSONQTkPA4K/arcgis/rest/services/Red_Natura_2000/FeatureServer/0',
+                renderer: {
+                    type: "unique-value",
+                    field: "TIPO_NUEVO", // Campo por el que clasificamos
+                    defaultSymbol: {
+                        type: "simple-fill"
+                    },
+
+                    uniqueValueInfos: [ { 
+                        value: "ZEPA",
+                            symbol: { 
+                                type: "simple-fill", 
+                                color: [187, 255, 0, 1],
+                                style: "diagonal-cross"
+                            }
+                        },
+                        {value: "LIC", 
+                            symbol: { 
+                                type: "simple-fill", 
+                                color: [255, 102, 0, 0.7]
+                            }
+                        },                        
+                        {value: "LIC/ZEPA", 
+                            symbol: { 
+                                type: "simple-fill", 
+                                color: [127, 127, 0, 0.7]
+                            }
+                        }
+                        ] 
+                    }, 
+                   // Asignamos el renderizador
+                    popupTemplate: plantillaPopup }); // Asignamos la plantilla
+                    
+             
+            // Creamos la vista del mapa 
+            let vista = new MapView({
+                container: 'viewDiv',
+                map: mapa,
+                center: [-5.7084246050, 35.3467664737],
+                zoom: 5, // Ajustado ligeramente para ver mejor la península
+                popup: {
+                    dockEnabled: true,
+                    dockOptions: {
+                        buttonEnabled: false,
+                        breakpoint: false,
+                        position: "bottom-left"
+                    }
+                }
+            });
+
+            // Función para rotar la vista
+            function rotateView() {
+                vista.goTo({
+                    rotation: 45
+                });
+            };
+
+            // Escuchar el evento del trigger-action
+            reactiveUtils.on(() => vista.popup, 'trigger-action', (event) => {
+                if (event.action.id === "rotate") {
+                    rotateView();
+                }
+            });
+
+            mapa.add(capa);
+        });
+    </script>
+</head>
+<body>
+    <div id="viewDiv"></div>
+</body>
+</html>

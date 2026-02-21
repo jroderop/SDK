@@ -1,0 +1,37 @@
+/* Estilos para el mapa */
+html, body, #viewDiv {
+  padding: 0;
+  margin: 0;
+  height: 100%;
+  width: 100%;
+}
+
+/* posición para el botón de consulta */
+#optionsDiv {
+  position: absolute;
+  top: 75px;
+  right: 20px;
+  padding: 10px;
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+  z-index: 100;
+}
+
+/* Estilo para el botón de "Ver Playas aptas para Submarinismo" */
+/* Estilo inicial */
+button {
+  cursor: pointer;
+  padding: 10px 20px;
+  background-color: #083149;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  font-weight: bold;
+  transition: background-color 0.3s;
+}
+
+/* Estilo hover*/
+button:hover {
+  background-color: #005e95;
+}
